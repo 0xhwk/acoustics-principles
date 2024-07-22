@@ -44,11 +44,20 @@ img {
   object-fit: contain;
 }
 .primary-button {
-  @apply flex min-h-12 min-w-48 items-center justify-center rounded-xl bg-primary px-4 text-white duration-300 hover:bg-primaryHover disabled:cursor-not-allowed disabled:border-content4 disabled:bg-content3;
+  @apply flex min-h-12 min-w-48 items-center justify-center rounded-xl bg-primary px-4 text-white duration-100 hover:bg-primaryHover disabled:cursor-not-allowed disabled:border-content4 disabled:bg-content3;
 }
 .secondary-button {
   @apply flex min-h-12 min-w-48 items-center justify-center rounded-xl border border-content4 bg-content3 px-4 text-white duration-300 hover:border-primaryHover hover:bg-primaryHover;
 }
 .input {
-  @apply h-full w-full bg-transparent pr-8 text-2xl text-white outline-none duration-300 placeholder:opacity-20 focus:caret-primary focus:outline-none disabled:cursor-not-allowed;
+  @apply h-full w-full bg-content4 rounded-full pr-8  text-white outline-none duration-300 px-3 py-2 placeholder:opacity-20 focus:caret-primary focus:outline-none disabled:cursor-not-allowed;
+}
+.primary-box {
+  @apply flex flex-col rounded-3xl border-[1px] border-content3 bg-content1 p-4 text-white;
+}
+.secondary-box {
+  @apply cursor-pointer rounded-xl border-[1px] border-content3 bg-content2 text-xs font-bold text-textSecondary duration-300;
+}
+.alternative-box {
+  @apply rounded-md border border-content4 bg-background text-xl font-bold text-white duration-300;
 }

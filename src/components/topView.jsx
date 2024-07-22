@@ -1,8 +1,12 @@
 // File path: src/components/TopView.js
 
 import React, { useState, useEffect } from "react";
+import {
+  findIntersection,
+  generateLineEquations,
+} from "./utils/calculateIntersection";
 
-export const TopView = ({ topPointMatrix, setTopPointMatrix }) => {
+export const TopView = ({ topPointMatrix, setTopPointMatrix, activeTab }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [draggingIndex, setDraggingIndex] = useState(null);
   const [dragged, setDragged] = useState(false);
@@ -10,6 +14,7 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix }) => {
   const [containerHeight, setContainerHeight] = useState(
     window.innerHeight / 2
   );
+  const [popoverOpen, setPopoverOpen] = useState(true);
 
   const drawingWidth = Math.round(containerWidth / 1.2);
   const drawingHeight = Math.round(containerHeight / 1.2);
@@ -17,14 +22,26 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix }) => {
   const boundaryCoordY = Math.round(drawingHeight / 2);
   const boundaryCoordX = Math.round(drawingWidth / 2);
 
-  console.log({
-    drawingWidth,
-    drawingHeight,
-    boundaryCoordX,
-    boundaryCoordY,
-    containerWidth,
-    containerHeight,
-  });
+  //   console.log({
+  //     drawingWidth,
+  //     drawingHeight,
+  //     boundaryCoordX,
+  //     boundaryCoordY,
+  //     containerWidth,
+  //     containerHeight,
+  //   });
+  const popover = (i, x, y, z = "0") => {
+    return (
+      <div
+        className={`${
+          !popoverOpen && "!hidden"
+        }  flex !flex-row text-nowrap p-2 secondary-box w-min translate-x-[10px] translate-y-[10px] !text-[10px]`}
+      >
+        <div>{`${i}:(${x},${y},${z})`}</div>
+      </div>
+    );
+  };
+
   useEffect(() => {
     const handleResize = () => {
       setContainerWidth(window.innerWidth / 2);
@@ -50,7 +67,9 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix }) => {
         Math.round(-(event.clientY - rect.top - centerY))
       )
     );
-    setMousePosition({ x, y });
+    let coordinates = { x, y };
+
+    setMousePosition(coordinates);
 
     // Update position if dragging
     if (draggingIndex !== null) {
@@ -70,16 +89,49 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix }) => {
   };
 
   const createPoint = () => {
+    if (activeTab == "remove") return;
     if (dragged) {
       setDragged(false);
       return;
     }
-    console.log(`Mouse Position: X: ${mousePosition.x}, Y: ${mousePosition.y}`);
-    const newPointMatrix = [
-      ...topPointMatrix,
-      [mousePosition.x, mousePosition.y],
-    ];
-    setTopPointMatrix(newPointMatrix);
+    const newPoint = [mousePosition.x, mousePosition.y];
+
+    // 1. Check for intersections with lines excluding the starting point
+    const intersectionResultStart = findIntersection(
+      topPointMatrix,
+      newPoint,
+      topPointMatrix[0]
+    );
+
+    if (intersectionResultStart) {
+      const { index } = intersectionResultStart;
+      const newPointMatrix = [
+        ...topPointMatrix.slice(0, index + 1),
+        newPoint,
+        ...topPointMatrix.slice(index + 1),
+      ];
+      setTopPointMatrix(newPointMatrix);
+    } else {
+      // 2. Check for intersections with lines excluding the ending point
+      const intersectionResultEnd = findIntersection(
+        topPointMatrix,
+        newPoint,
+        topPointMatrix[topPointMatrix.length - 1]
+      );
+
+      if (intersectionResultEnd) {
+        const { index } = intersectionResultEnd;
+        const newPointMatrix = [
+          ...topPointMatrix.slice(0, index + 1),
+          newPoint,
+          ...topPointMatrix.slice(index + 1),
+        ];
+        setTopPointMatrix(newPointMatrix);
+      } else {
+        const newPointMatrix = [...topPointMatrix, newPoint];
+        setTopPointMatrix(newPointMatrix);
+      }
+    }
   };
 
   const renderExistingPoints = () => {
@@ -87,21 +139,53 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix }) => {
       const [x, y] = point;
       const left = `${boundaryCoordX + x}px`;
       const top = `${boundaryCoordY - y}px`; // Ensure to invert Y-axis here
-
       const dotSize = 8;
       const halfDotSize = dotSize / 2;
+      const leftNudged = left - halfDotSize;
+      const topNudged = top - halfDotSize;
+
+      return (
+        <React.Fragment key={index}>
+          <div
+            key={index}
+            className="absolute bg-blue-500 rounded-full cursor-pointer"
+            style={{
+              width: dotSize, // Adjust size as needed
+              height: dotSize,
+              left: `calc(${left} - ${halfDotSize}px)`, // Center the dot horizontally
+              top: `calc(${top} - ${halfDotSize}px)`, // Center the dot vertically
+            }}
+            onClick={() => {
+              if (activeTab !== "remove") return;
+              const newMatrix = topPointMatrix.filter((_, i) => i !== index);
+              setTopPointMatrix(newMatrix);
+            }}
+            onMouseDown={() => {
+              if (activeTab === "remove") return;
+              handleMouseDown(index);
+            }}
+          >
+            {popover(index, x, y, "0", topNudged, leftNudged)}
+          </div>
+        </React.Fragment>
+      );
+    });
+  };
+
+  const renderLineLengths = () => {
+    const lineEquations = generateLineEquations(topPointMatrix);
+    return lineEquations.map((line, index) => {
       return (
         <div
           key={index}
-          className="absolute bg-blue-500 rounded-full cursor-pointer"
+          className="p-1 !text-[10px] absolute z-50 bg-purple-500 secondary-box"
           style={{
-            width: dotSize, // Adjust size as needed
-            height: dotSize,
-            left: `calc(${left} - ${halfDotSize}px)`, // Center the dot horizontally
-            top: `calc(${top} - ${halfDotSize}px)`, // Center the dot vertically
+            left: `${boundaryCoordX + line.midpoint[0] - 12}px`,
+            top: `${boundaryCoordY - line.midpoint[1] - 12}px`,
           }}
-          onMouseDown={() => handleMouseDown(index)}
-        ></div>
+        >
+          {Math.round(line.length)}
+        </div>
       );
     });
   };
@@ -131,6 +215,8 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix }) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp} // Handle mouse up to stop dragging
       onClick={createPoint}
+      onMouseEnter={() => setPopoverOpen(true)}
+      onMouseLeave={() => setPopoverOpen(false)}
     >
       <div
         className={`bg-green-400`} // Use classes for static styling
@@ -140,6 +226,7 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix }) => {
           position: "relative",
         }}
       >
+        {renderLineLengths()}
         {renderPolygon()}
         {renderExistingPoints()}
       </div>
