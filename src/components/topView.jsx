@@ -6,21 +6,30 @@ import {
   generateLineEquations,
 } from "./utils/calculateIntersection";
 
-export const TopView = ({ topPointMatrix, setTopPointMatrix, activeTab }) => {
+export const TopView = ({
+  listenerPoint,
+  setListenerPoint,
+  setSourcePoint,
+  sourcePoint,
+  containerWidth,
+  containerHeight,
+  setContainerWidth,
+  setContainerHeight,
+  drawingWidth,
+  drawingHeight,
+  boundaryCoordX,
+  boundaryCoordY,
+  topPointMatrix,
+  setTopPointMatrix,
+  activeTab,
+  setAbsorbtionCoef,
+  absorbtionCoef,
+}) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [draggingIndex, setDraggingIndex] = useState(null);
   const [dragged, setDragged] = useState(false);
-  const [containerWidth, setContainerWidth] = useState(window.innerWidth / 2);
-  const [containerHeight, setContainerHeight] = useState(
-    window.innerHeight / 2
-  );
+
   const [popoverOpen, setPopoverOpen] = useState(true);
-
-  const drawingWidth = Math.round(containerWidth / 1.2);
-  const drawingHeight = Math.round(containerHeight / 1.2);
-
-  const boundaryCoordY = Math.round(drawingHeight / 2);
-  const boundaryCoordX = Math.round(drawingWidth / 2);
 
   //   console.log({
   //     drawingWidth,
@@ -70,9 +79,20 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix, activeTab }) => {
     let coordinates = { x, y };
 
     setMousePosition(coordinates);
+    if (draggingIndex == "source") {
+      setSourcePoint([x, y]);
+    }
+
+    if (draggingIndex == "listener") {
+      setListenerPoint([x, y]);
+    }
 
     // Update position if dragging
-    if (draggingIndex !== null) {
+    if (
+      draggingIndex !== null &&
+      draggingIndex !== "source" &&
+      draggingIndex !== "listener"
+    ) {
       const newTopPointMatrix = [...topPointMatrix];
       newTopPointMatrix[draggingIndex] = [x, y];
       setTopPointMatrix(newTopPointMatrix);
@@ -134,6 +154,60 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix, activeTab }) => {
     }
   };
 
+  const renderSourcePoint = () => {
+    const [x, y] = sourcePoint;
+    const left = `${boundaryCoordX + x}px`;
+    const top = `${boundaryCoordY - y}px`; // Ensure to invert Y-axis here
+    const dotSize = 8;
+    const halfDotSize = dotSize / 2;
+    const leftNudged = left - halfDotSize;
+    const topNudged = top - halfDotSize;
+    return (
+      <div
+        key={"source"}
+        className={`absolute z-50 bg-purple-500 rounded-full cursor-pointer`}
+        style={{
+          width: dotSize, // Adjust size as needed
+          height: dotSize,
+          left: `calc(${left} - ${halfDotSize}px)`, // Center the dot horizontally
+          top: `calc(${top} - ${halfDotSize}px)`, // Center the dot vertically
+        }}
+        onMouseDown={() => {
+          if (activeTab === "remove") return;
+          handleMouseDown("source");
+        }}
+      >
+        {popover("source", x, y, "0", topNudged, leftNudged)}
+      </div>
+    );
+  };
+  const renderListenerPoint = () => {
+    const [x, y] = listenerPoint;
+    const left = `${boundaryCoordX + x}px`;
+    const top = `${boundaryCoordY - y}px`; // Ensure to invert Y-axis here
+    const dotSize = 8;
+    const halfDotSize = dotSize / 2;
+    const leftNudged = left - halfDotSize;
+    const topNudged = top - halfDotSize;
+    return (
+      <div
+        key={"listener"}
+        className={`absolute z-50 bg-cyan-600 rounded-full cursor-pointer`}
+        style={{
+          width: dotSize, // Adjust size as needed
+          height: dotSize,
+          left: `calc(${left} - ${halfDotSize}px)`, // Center the dot horizontally
+          top: `calc(${top} - ${halfDotSize}px)`, // Center the dot vertically
+        }}
+        onMouseDown={() => {
+          if (activeTab === "remove") return;
+          handleMouseDown("listener");
+        }}
+      >
+        {popover("listenerPoint", x, y, "0", topNudged, leftNudged)}
+      </div>
+    );
+  };
   const renderExistingPoints = () => {
     return topPointMatrix.map((point, index) => {
       const [x, y] = point;
@@ -148,7 +222,7 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix, activeTab }) => {
         <React.Fragment key={index}>
           <div
             key={index}
-            className="absolute bg-blue-500 rounded-full cursor-pointer"
+            className={`absolute bg-blue-500 rounded-full cursor-pointer`}
             style={{
               width: dotSize, // Adjust size as needed
               height: dotSize,
@@ -178,7 +252,7 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix, activeTab }) => {
       return (
         <div
           key={index}
-          className="p-1 !text-[10px] absolute z-50 bg-purple-500 secondary-box"
+          className="p-1 !text-[10px] absolute z-40 bg-purple-500 secondary-box"
           style={{
             left: `${boundaryCoordX + line.midpoint[0] - 12}px`,
             top: `${boundaryCoordY - line.midpoint[1] - 12}px`,
@@ -226,6 +300,8 @@ export const TopView = ({ topPointMatrix, setTopPointMatrix, activeTab }) => {
           position: "relative",
         }}
       >
+        {renderListenerPoint()}
+        {renderSourcePoint()}
         {renderLineLengths()}
         {renderPolygon()}
         {renderExistingPoints()}

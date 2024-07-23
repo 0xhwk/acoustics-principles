@@ -50,7 +50,7 @@ img {
   @apply flex min-h-12 min-w-48 items-center justify-center rounded-xl border border-content4 bg-content3 px-4 text-white duration-300 hover:border-primaryHover hover:bg-primaryHover;
 }
 .input {
-  @apply h-full w-full bg-content4 rounded-full pr-8  text-white outline-none duration-300 px-3 py-2 placeholder:opacity-20 focus:caret-primary focus:outline-none disabled:cursor-not-allowed;
+  @apply h-full w-full bg-content4 rounded-lg pr-8  text-white outline-none duration-300 px-3 py-2 placeholder:opacity-20 focus:caret-primary focus:outline-none disabled:cursor-not-allowed;
 }
 .primary-box {
   @apply flex flex-col rounded-3xl border-[1px] border-content3 bg-content1 p-4 text-white;
