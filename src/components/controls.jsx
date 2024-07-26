@@ -1,4 +1,10 @@
-export const Controls = ({ activeTab, setActiveTab, setTopPointMatrix }) => {
+export const Controls = ({
+  scale,
+  setScale,
+  activeTab,
+  setActiveTab,
+  setTopPointMatrix,
+}) => {
   return (
     <div className="flex gap-2 w-full ">
       <button
@@ -25,6 +31,17 @@ export const Controls = ({ activeTab, setActiveTab, setTopPointMatrix }) => {
       >
         Reset
       </button>
+      <input
+        type="number"
+        value={scale}
+        onChange={(e) => {
+          let newScale = e.target.value;
+          newScale = newScale ? newScale : 1;
+          newScale = newScale <= 0 ? 1 : newScale;
+          setScale(newScale);
+        }}
+        className="input !p-0 !px-2 !flex !justify-center !items-center"
+      />
     </div>
   );
 };

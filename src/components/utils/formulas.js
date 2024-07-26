@@ -1,12 +1,4 @@
-export function calculateVolume(pointMatrix, height) {
-  if (pointMatrix.length <= 2 || !height) {
-    console.log("Missing arguments for volume calc.!");
-  }
-
-  const area = calculateArea(pointMatrix);
-
-  return area * height;
-}
+import { generateLineEquations } from "./calculateIntersection";
 
 export function calculateArea(pointMatrix) {
   if (pointMatrix.length <= 2) {
@@ -26,4 +18,14 @@ export function calculateArea(pointMatrix) {
   return Math.abs(sum1 - sum2) / 2;
 }
 
-export function calculateReverbTime() {}
+export function calculateVolume(pointMatrix, height) {
+  if (pointMatrix.length <= 2 || !height) {
+    console.log("Missing arguments for volume calc.!");
+  }
+
+  const area = calculateArea(pointMatrix);
+
+  return area * height;
+}
+
+export function calculatePresence(sourcePoint, listenerPoint, lineEquations) {}

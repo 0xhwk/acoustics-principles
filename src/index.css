@@ -61,3 +61,10 @@ img {
 .alternative-box {
   @apply rounded-md border border-content4 bg-background text-xl font-bold text-white duration-300;
 }
+
+.no-select {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+}

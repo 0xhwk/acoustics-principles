@@ -1,12 +1,10 @@
 // File path: src/components/TopView.js
 
 import React, { useState, useEffect } from "react";
-import {
-  findIntersection,
-  generateLineEquations,
-} from "./utils/calculateIntersection";
+import { findIntersection } from "./utils/calculateIntersection";
 
 export const TopView = ({
+  lineEquations,
   listenerPoint,
   setListenerPoint,
   setSourcePoint,
@@ -22,8 +20,10 @@ export const TopView = ({
   topPointMatrix,
   setTopPointMatrix,
   activeTab,
-  setAbsorbtionCoef,
-  absorbtionCoef,
+  setWallMaterial,
+  wallMaterial,
+  scale,
+  setScale,
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [draggingIndex, setDraggingIndex] = useState(null);
@@ -46,7 +46,7 @@ export const TopView = ({
           !popoverOpen && "!hidden"
         }  flex !flex-row text-nowrap p-2 secondary-box w-min translate-x-[10px] translate-y-[10px] !text-[10px]`}
       >
-        <div>{`${i}:(${x},${y},${z})`}</div>
+        <div>{`${i}:(${x / scale},${y / scale})`}</div>
       </div>
     );
   };
@@ -76,15 +76,15 @@ export const TopView = ({
         Math.round(-(event.clientY - rect.top - centerY))
       )
     );
-    let coordinates = { x, y };
+    let coordinates = { x: Math.round(x / scale), y: Math.round(y / scale) };
 
     setMousePosition(coordinates);
     if (draggingIndex == "source") {
-      setSourcePoint([x, y]);
+      setSourcePoint([coordinates.x, coordinates.y]);
     }
 
     if (draggingIndex == "listener") {
-      setListenerPoint([x, y]);
+      setListenerPoint([coordinates.x, coordinates.y]);
     }
 
     // Update position if dragging
@@ -94,7 +94,7 @@ export const TopView = ({
       draggingIndex !== "listener"
     ) {
       const newTopPointMatrix = [...topPointMatrix];
-      newTopPointMatrix[draggingIndex] = [x, y];
+      newTopPointMatrix[draggingIndex] = [coordinates.x, coordinates.y];
       setTopPointMatrix(newTopPointMatrix);
     }
   };
@@ -156,8 +156,8 @@ export const TopView = ({
 
   const renderSourcePoint = () => {
     const [x, y] = sourcePoint;
-    const left = `${boundaryCoordX + x}px`;
-    const top = `${boundaryCoordY - y}px`; // Ensure to invert Y-axis here
+    const left = `${boundaryCoordX + x * scale}px`;
+    const top = `${boundaryCoordY - y * scale}px`; // Ensure to invert Y-axis here
     const dotSize = 8;
     const halfDotSize = dotSize / 2;
     const leftNudged = left - halfDotSize;
@@ -177,14 +177,14 @@ export const TopView = ({
           handleMouseDown("source");
         }}
       >
-        {popover("source", x, y, "0", topNudged, leftNudged)}
+        {popover("source", x * scale, y * scale, "0", topNudged, leftNudged)}
       </div>
     );
   };
   const renderListenerPoint = () => {
-    const [x, y] = listenerPoint;
-    const left = `${boundaryCoordX + x}px`;
-    const top = `${boundaryCoordY - y}px`; // Ensure to invert Y-axis here
+    const [x, y, z] = listenerPoint;
+    const left = `${boundaryCoordX + x * scale}px`;
+    const top = `${boundaryCoordY - y * scale}px`; // Ensure to invert Y-axis here
     const dotSize = 8;
     const halfDotSize = dotSize / 2;
     const leftNudged = left - halfDotSize;
@@ -204,15 +204,23 @@ export const TopView = ({
           handleMouseDown("listener");
         }}
       >
-        {popover("listenerPoint", x, y, "0", topNudged, leftNudged)}
+        {popover(
+          "listenerPoint",
+          x * scale,
+          y * scale,
+          z,
+          "0",
+          topNudged,
+          leftNudged
+        )}
       </div>
     );
   };
   const renderExistingPoints = () => {
     return topPointMatrix.map((point, index) => {
       const [x, y] = point;
-      const left = `${boundaryCoordX + x}px`;
-      const top = `${boundaryCoordY - y}px`; // Ensure to invert Y-axis here
+      const left = `${boundaryCoordX + x * scale}px`;
+      const top = `${boundaryCoordY - y * scale}px`; // Ensure to invert Y-axis here
       const dotSize = 8;
       const halfDotSize = dotSize / 2;
       const leftNudged = left - halfDotSize;
@@ -239,7 +247,7 @@ export const TopView = ({
               handleMouseDown(index);
             }}
           >
-            {popover(index, x, y, "0", topNudged, leftNudged)}
+            {popover(index, x * scale, y * scale, "0", topNudged, leftNudged)}
           </div>
         </React.Fragment>
       );
@@ -247,15 +255,14 @@ export const TopView = ({
   };
 
   const renderLineLengths = () => {
-    const lineEquations = generateLineEquations(topPointMatrix);
     return lineEquations.map((line, index) => {
       return (
         <div
           key={index}
           className="p-1 !text-[10px] absolute z-40 bg-purple-500 secondary-box"
           style={{
-            left: `${boundaryCoordX + line.midpoint[0] - 12}px`,
-            top: `${boundaryCoordY - line.midpoint[1] - 12}px`,
+            left: `${boundaryCoordX + line.midpoint[0] * scale - 12}px`,
+            top: `${boundaryCoordY - line.midpoint[1] * scale - 12}px`,
           }}
         >
           {Math.round(line.length)}
@@ -266,7 +273,10 @@ export const TopView = ({
 
   const renderPolygon = () => {
     const points = topPointMatrix
-      .map(([x, y]) => `${boundaryCoordX + x},${boundaryCoordY - y}`) // Note inversion of Y-axis
+      .map(
+        ([x, y]) =>
+          `${boundaryCoordX + x * scale},${boundaryCoordY - y * scale}`
+      ) // Note inversion of Y-axis
       .join(" ");
 
     return (
@@ -281,7 +291,7 @@ export const TopView = ({
 
   return (
     <div
-      className={`bg-red-500 flex items-center justify-center relative`} // Use classes for static styling
+      className={`bg-red-500 flex items-center justify-center relative no-select`} // Use classes for static styling
       style={{
         width: containerWidth,
         height: containerHeight,

@@ -17,7 +17,13 @@ export const generateLineEquations = (pointMatrix) => {
     const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
     const midpoint = [Math.round((x1 + x2) / 2), Math.round((y1 + y2) / 2)];
 
-    equations.push({ slope, length, midpoint });
+    equations.push({
+      slope,
+      length,
+      midpoint,
+      firstPoint: [x1, y1], //starting point of the line
+      secondPoint: [x2, y2], //end point of the line
+    });
   }
 
   return equations;

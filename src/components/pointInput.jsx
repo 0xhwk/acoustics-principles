@@ -8,8 +8,8 @@ export const PointInput = ({
   boundaryCoordY,
   ceilingHeight,
   setCeilingHeight,
-  setAbsorbtionCoef,
-  absorbtionCoef,
+  setWallMaterial,
+  wallMaterial,
 }) => {
   const validatePoint = (point) => {
     // Helper function to clean and convert a coordinate
