@@ -2,22 +2,6 @@ import { mirrorPointAcrossLine } from "./mirrorPoint";
 import { soundVelocity } from "../tables/config";
 import { calculateDistanceBetween2Points } from "./disanceBetween2Points";
 
-const orientation = (p, q, r) => {
-  const val = (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1]);
-  if (val === 0) return 0; // parallel lines
-  return val > 0 ? 1 : 2; // crossing lines
-};
-
-const doLineSegmentsIntersect = (p1, q1, p2, q2) => {
-  const o1 = orientation(p1, q1, p2);
-  const o2 = orientation(p1, q1, q2);
-  const o3 = orientation(p2, q2, p1);
-  const o4 = orientation(p2, q2, q1);
-
-  // General case
-  return o1 !== o2 && o3 !== o4;
-};
-
 const findEarliestReflection = (lineEquations, sourcePoint, listenerPoint) => {
   let earliestReflection = {
     reflectionDistance: null, //number:meters
@@ -26,6 +10,7 @@ const findEarliestReflection = (lineEquations, sourcePoint, listenerPoint) => {
     directDistance: null, //number:meters
     directTime: null, //number:seconds
     directLine: false, //number:meters
+    initialTimeDiff: null,
   };
   let minDistance = Infinity;
 
@@ -77,7 +62,7 @@ const findEarliestReflection = (lineEquations, sourcePoint, listenerPoint) => {
     }
 
     if (!intersects) {
-      const reflectionDistance = calculateDistance(
+      const reflectionDistance = calculateDistanceBetween2Points(
         sourcePoint,
         mirroredListener
       );
@@ -95,8 +80,25 @@ const findEarliestReflection = (lineEquations, sourcePoint, listenerPoint) => {
   }
 
   earliestReflection.directLine = directLine;
-
+  earliestReflection.initialTimeDiff =
+    earliestReflection.earliestReflectionTime - earliestReflection.directTime;
   return earliestReflection;
+};
+
+const orientation = (p, q, r) => {
+  const val = (q[1] - p[1]) * (r[0] - q[0]) - (q[0] - p[0]) * (r[1] - q[1]);
+  if (val === 0) return 0; // parallel lines
+  return val > 0 ? 1 : 2; // crossing lines
+};
+
+const doLineSegmentsIntersect = (p1, q1, p2, q2) => {
+  const o1 = orientation(p1, q1, p2);
+  const o2 = orientation(p1, q1, q2);
+  const o3 = orientation(p2, q2, p1);
+  const o4 = orientation(p2, q2, q1);
+
+  // General case
+  return o1 !== o2 && o3 !== o4;
 };
 
 export default findEarliestReflection;

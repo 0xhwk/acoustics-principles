@@ -8,6 +8,8 @@ import { generateLineEquations } from "./components/utils/calculateIntersection"
 import { mirrorPointAcrossLine } from "./components/utils/mirrorPoint";
 import findEarliestReflection from "./components/utils/findEarliestReflection";
 import { calculateReverbTime } from "./components/utils/findReverbTime";
+import { calculateG } from "./components/utils/calculateSoundStregthG";
+import { findClarityIndex } from "./components/utils/findClarityIndex";
 
 function App() {
   const [activeTab, setActiveTab] = useState("add");
@@ -141,7 +143,20 @@ function App() {
             ceilingMaterial,
             floorMaterial
           );
-          console.log(revtime);
+          const earliest = findEarliestReflection(
+            lineEquations,
+            sourcePoint,
+            listenerPoint
+          );
+          console.log("earliestRef:", earliest);
+          const { SeValues, volume } = revtime;
+          const Gvals = calculateG(sourcePoint, listenerPoint, revtime);
+          console.log("revtime:", revtime);
+          console.log("Gvalues:", Gvals);
+
+          const Cindex = findClarityIndex(revtime, sourcePoint, listenerPoint);
+
+          console.log("cindex", Cindex);
         }}
         className="primary-button"
       >

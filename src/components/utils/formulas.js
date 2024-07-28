@@ -27,5 +27,3 @@ export function calculateVolume(pointMatrix, height) {
 
   return area * height;
 }
-
-export function calculatePresence(sourcePoint, listenerPoint, lineEquations) {}
