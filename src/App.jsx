@@ -46,7 +46,7 @@ function App() {
   const boundaryCoordY = Math.round(drawingHeight / 2);
   const boundaryCoordX = Math.round(drawingWidth / 2);
 
-  console.log(ceilingPoints, floorPoints);
+  console.log({ ceilingPoints, floorPoints });
   //CHANGE INDIVIDUAL POINT COORDINATES
   const changePointCoordinates = (newPoint, index) => {
     const newPointX = Number(newPoint[0]);
@@ -89,6 +89,10 @@ function App() {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             setTopPointMatrix={setTopPointMatrix}
+            floorPoints={floorPoints}
+            ceilingPoints={ceilingPoints}
+            setFloorPoints={setFloorPoints}
+            setCeilingPoints={setCeilingPoints}
           />
           <div className="flex">
             <div className="flex flex-col">

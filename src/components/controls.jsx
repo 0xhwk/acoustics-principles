@@ -4,6 +4,8 @@ export const Controls = ({
   activeTab,
   setActiveTab,
   setTopPointMatrix,
+  setFloorPoints,
+  setCeilingPoints,
 }) => {
   return (
     <div className="flex gap-2 w-full  h-min">
@@ -26,6 +28,8 @@ export const Controls = ({
       <button
         onClick={() => {
           setTopPointMatrix([]);
+          setCeilingPoints([]);
+          setFloorPoints([]);
         }}
         className="secondary-button"
       >

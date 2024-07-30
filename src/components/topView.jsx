@@ -28,6 +28,7 @@ export const TopView = ({
   floorPoints,
   setFloorPoints,
   ceilingPoints,
+  setCeilingPoints,
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [draggingIndex, setDraggingIndex] = useState(null);
@@ -164,6 +165,8 @@ export const TopView = ({
       } else {
         const newFloorPoints = [...floorPoints, newPoint];
         setFloorPoints(newFloorPoints);
+        const newCeilingPoints = [...ceilingPoints, newPointProjection];
+        setCeilingPoints(newCeilingPoints);
         const orderedPoints = mod
           ? [newPoint, newPointProjection]
           : [newPointProjection, newPoint];
