@@ -6,7 +6,7 @@ export const Controls = ({
   setTopPointMatrix,
 }) => {
   return (
-    <div className="flex gap-2 w-full ">
+    <div className="flex gap-2 w-full  h-min">
       <button
         onClick={() => setActiveTab("add")}
         className={`primary-button ${

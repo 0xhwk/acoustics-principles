@@ -10,6 +10,8 @@ import findEarliestReflection from "./components/utils/findEarliestReflection";
 import { calculateReverbTime } from "./components/utils/findReverbTime";
 import { calculateG } from "./components/utils/calculateSoundStregthG";
 import { findClarityIndex } from "./components/utils/findClarityIndex";
+import { SideView } from "./components/sideView";
+import { SideViewYZ } from "./components/sideViewYZ";
 
 function App() {
   const [activeTab, setActiveTab] = useState("add");
@@ -20,7 +22,8 @@ function App() {
   const [listenerPoint, setListenerPoint] = useState([scale, 0, 0]);
   const [sourcePoint, setSourcePoint] = useState([-scale, 0, 0]);
   const [lineEquations, setLineEquations] = useState([]);
-
+  const [ceilingPoints, setCeilingPoints] = useState([]);
+  const [floorPoints, setFloorPoints] = useState([]);
   //MATERIAL STATE
   const { materials } = absorbtionTable;
   const defaultMaterial = Object.keys(materials)[0];
@@ -43,6 +46,7 @@ function App() {
   const boundaryCoordY = Math.round(drawingHeight / 2);
   const boundaryCoordX = Math.round(drawingWidth / 2);
 
+  console.log(ceilingPoints, floorPoints);
   //CHANGE INDIVIDUAL POINT COORDINATES
   const changePointCoordinates = (newPoint, index) => {
     const newPointX = Number(newPoint[0]);
@@ -86,28 +90,91 @@ function App() {
             setActiveTab={setActiveTab}
             setTopPointMatrix={setTopPointMatrix}
           />
-          <TopView
-            scale={scale}
-            setScale={setScale}
-            lineEquations={lineEquations}
-            wallMaterial={wallMaterial}
-            setWallMaterial={setWallMaterial}
-            listenerPoint={listenerPoint}
-            setListenerPoint={setListenerPoint}
-            setSourcePoint={setSourcePoint}
-            sourcePoint={sourcePoint}
-            containerWidth={containerWidth}
-            containerHeight={containerHeight}
-            setContainerWidth={setContainerWidth}
-            setContainerHeight={setContainerHeight}
-            drawingWidth={drawingWidth}
-            drawingHeight={drawingHeight}
-            boundaryCoordX={boundaryCoordX}
-            boundaryCoordY={boundaryCoordY}
-            activeTab={activeTab}
-            topPointMatrix={topPointMatrix}
-            setTopPointMatrix={setTopPointMatrix}
-          />
+          <div className="flex">
+            <div className="flex flex-col">
+              <TopView
+                scale={scale}
+                setScale={setScale}
+                lineEquations={lineEquations}
+                wallMaterial={wallMaterial}
+                setWallMaterial={setWallMaterial}
+                listenerPoint={listenerPoint}
+                setListenerPoint={setListenerPoint}
+                setSourcePoint={setSourcePoint}
+                sourcePoint={sourcePoint}
+                containerWidth={containerWidth}
+                containerHeight={containerHeight}
+                setContainerWidth={setContainerWidth}
+                setContainerHeight={setContainerHeight}
+                drawingWidth={drawingWidth}
+                drawingHeight={drawingHeight}
+                boundaryCoordX={boundaryCoordX}
+                boundaryCoordY={boundaryCoordY}
+                activeTab={activeTab}
+                topPointMatrix={topPointMatrix}
+                setTopPointMatrix={setTopPointMatrix}
+                floorPoints={floorPoints}
+                ceilingPoints={ceilingPoints}
+                setFloorPoints={setFloorPoints}
+                setCeilingPoints={setCeilingPoints}
+              />
+              <SideView
+                scale={scale}
+                setScale={setScale}
+                lineEquations={lineEquations}
+                wallMaterial={wallMaterial}
+                setWallMaterial={setWallMaterial}
+                listenerPoint={listenerPoint}
+                setListenerPoint={setListenerPoint}
+                setSourcePoint={setSourcePoint}
+                sourcePoint={sourcePoint}
+                containerWidth={containerWidth}
+                containerHeight={containerHeight}
+                setContainerWidth={setContainerWidth}
+                setContainerHeight={setContainerHeight}
+                drawingWidth={drawingWidth}
+                drawingHeight={drawingHeight}
+                boundaryCoordX={boundaryCoordX}
+                boundaryCoordY={boundaryCoordY}
+                activeTab={activeTab}
+                topPointMatrix={topPointMatrix}
+                setTopPointMatrix={setTopPointMatrix}
+                floorPoints={floorPoints}
+                ceilingPoints={ceilingPoints}
+                setFloorPoints={setFloorPoints}
+                setCeilingPoints={setCeilingPoints}
+              />
+            </div>
+            <div>
+              <SideViewYZ
+                scale={scale}
+                setScale={setScale}
+                lineEquations={lineEquations}
+                wallMaterial={wallMaterial}
+                setWallMaterial={setWallMaterial}
+                listenerPoint={listenerPoint}
+                setListenerPoint={setListenerPoint}
+                setSourcePoint={setSourcePoint}
+                sourcePoint={sourcePoint}
+                containerWidth={containerWidth}
+                containerHeight={containerHeight}
+                setContainerWidth={setContainerWidth}
+                setContainerHeight={setContainerHeight}
+                drawingWidth={drawingWidth}
+                drawingHeight={drawingHeight}
+                boundaryCoordX={boundaryCoordX}
+                boundaryCoordY={boundaryCoordY}
+                activeTab={activeTab}
+                topPointMatrix={topPointMatrix}
+                setTopPointMatrix={setTopPointMatrix}
+                floorPoints={floorPoints}
+                ceilingPoints={ceilingPoints}
+                setFloorPoints={setFloorPoints}
+                setCeilingPoints={setCeilingPoints}
+              />
+              <div>3d</div>
+            </div>
+          </div>
         </div>
 
         <PointInput

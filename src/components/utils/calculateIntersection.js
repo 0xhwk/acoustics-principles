@@ -31,8 +31,8 @@ export const generateLineEquations = (pointMatrix) => {
 
 export const findIntersection = (pointMatrix, newPoint, excludePoint) => {
   if (pointMatrix.length < 3) return;
-  const [newX, newY] = newPoint;
-  const [xExclude, yExclude] = excludePoint;
+  const [newX, newY, _ZN] = newPoint;
+  const [xExclude, yExclude, _ZEX] = excludePoint;
 
   for (let i = 0; i < pointMatrix.length - 1; i++) {
     const [x1, y1] = pointMatrix[i];
